@@ -11,12 +11,7 @@ import { Input } from '@Components/ui/input';
 import { Label } from '@Components/ui/label';
 import { Textarea } from '@Components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@Components/ui/tabs';
-import {
-    CardHeader,
-    CardDescription,
-    CardContent,
-    CardFooter,
-} from '@Components/ui/card';
+import { CardHeader, CardDescription, CardContent } from '@Components/ui/card';
 import { PopoverContent, PopoverTrigger } from '@Components/ui/popover';
 import {
     Command,

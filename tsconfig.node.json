@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "skipLibCheck": true,
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+
+        /* Type checking */
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@Components/*": ["./src/components/*"],
+            "@Services/*": ["./src/services/*"],
+            "@Assets/*": ["./src/assets/*"]
+        }
+    },
+    "include": ["vite.config.ts"]
+}

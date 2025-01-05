@@ -1,11 +1,11 @@
 use libreauth::oath::TOTPBuilder;
 use serde_json::{json, Value};
 
-mod driver;
+mod vault;
 
 #[tauri::command]
 fn resolve_twofactor(password: &str, index: i64) -> Value {
-    let mut container = driver::read(password);
+    let mut container = vault::read(password);
 
     let credentials = container.as_array_mut().unwrap();
 
@@ -30,12 +30,12 @@ fn resolve_twofactor(password: &str, index: i64) -> Value {
 
 #[tauri::command]
 fn remove_credentials(password: &str, index: i64) -> Value {
-    let mut container = driver::read(password);
+    let mut container = vault::read(password);
     let credentials = container.as_array_mut().unwrap();
 
     credentials.remove(index as usize);
 
-    driver::write(password, json!(credentials));
+    vault::write(password, json!(credentials));
 
     let response: Value = json!({ "success": true });
 
@@ -44,14 +44,14 @@ fn remove_credentials(password: &str, index: i64) -> Value {
 
 #[tauri::command]
 fn add_credential(password: &str, credential_type: &str, credential: Value) -> Value {
-    let mut container = driver::read(password);
+    let mut container = vault::read(password);
     let credentials = container.as_array_mut().unwrap();
     credentials.push(json!({
         "type": credential_type,
         "credential": credential
     }));
 
-    driver::write(password, json!(credentials));
+    vault::write(password, json!(credentials));
 
     let response: Value = json!({ "success": true });
 
@@ -60,7 +60,7 @@ fn add_credential(password: &str, credential_type: &str, credential: Value) -> V
 
 #[tauri::command]
 fn register(password: &str) -> Value {
-    driver::write(password, json!([]));
+    vault::write(password, json!([]));
 
     let response: Value = json!({ "success": true });
 
@@ -69,7 +69,7 @@ fn register(password: &str) -> Value {
 
 #[tauri::command]
 fn login(password: &str) -> bool {
-    let container = driver::read(password);
+    let container = vault::read(password);
 
     if container.is_array() {
         return true;
@@ -85,7 +85,7 @@ fn exists() -> bool {
 
 #[tauri::command]
 fn get_credentials(password: &str) -> Vec<Value> {
-    let data = driver::read(password);
+    let data = vault::read(password);
 
     let response: Vec<Value> = data
         .as_array()

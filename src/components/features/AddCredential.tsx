@@ -70,7 +70,7 @@ const AddCredential: React.FC = () => {
         };
 
         if (twoFactor != '') {
-            credential['twoFactor'] = twoFactor;
+            credential['twoFactor'] = twoFactor.toUpperCase();
         }
 
         console.log(credential);

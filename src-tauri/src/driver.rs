@@ -21,6 +21,7 @@ pub fn write(password: &str, credentials: Value) {
 pub fn read(password: &str) -> Value {
     let mut descriptor: File = File::open("data/container.encrypted").expect("failed to open file");
     let mut contents: Vec<u8> = Vec::new();
+
     descriptor
         .read_to_end(&mut contents)
         .expect("failed to read file");
@@ -28,6 +29,6 @@ pub fn read(password: &str) -> Value {
     let decrypted_string = vault::decrypt(password.to_string(), contents).unwrap();
     let decrypted: &str = decrypted_string.as_str();
     let container = serde_json::from_str(decrypted).expect("failed to parse JSON");
-
+    println!("{:?}", container);
     container
 }

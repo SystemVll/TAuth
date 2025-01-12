@@ -4,9 +4,10 @@
 
 TAuth is a TOTP and password manager application built using Tauri, React, and Rust. It allows users to securely store and manage their credentials, including passwords and two-factor authentication (2FA) codes.
 
-<img height="520" src="https://github.com/user-attachments/assets/cd08254c-8266-470b-a0ea-ddf0b0b7e17a" />
-<img height="520" src="https://github.com/user-attachments/assets/27563d3a-6452-42a8-8729-b9dafd7681c2" />
-
+<div align="center">
+    <img height="520" src="https://github.com/user-attachments/assets/cd08254c-8266-470b-a0ea-ddf0b0b7e17a" />
+    <img height="520" src="https://github.com/user-attachments/assets/27563d3a-6452-42a8-8729-b9dafd7681c2" />
+</div>
 
 ## Features
 

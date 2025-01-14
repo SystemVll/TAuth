@@ -29,6 +29,6 @@ pub fn read(password: &str) -> Value {
     let decrypted_string = vault::decrypt(password.to_string(), contents).unwrap();
     let decrypted: &str = decrypted_string.as_str();
     let container = serde_json::from_str(decrypted).expect("failed to parse JSON");
-    println!("{:?}", container);
+
     container
 }

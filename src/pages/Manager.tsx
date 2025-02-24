@@ -1,14 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { useState } from 'react';
 
-import { Card, CardHeader } from '@Components/ui/card';
-import Navbar from '@Components/features/Navbar';
-import { Input } from '@Components/ui/input';
-import CredentialCard from '@Components/features/CredentialCard';
-
-import Session from '@Services/Session';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import CredentialCard from '@Components/features/CredentialCard';
+import Navbar from '@Components/features/Navbar';
+import { Card, CardHeader } from '@Components/ui/card';
+import { Input } from '@Components/ui/input';
+import Session from '@Services/Session';
+import { useQuery } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 
 const Manager: React.FC = () => {
     const [search, setSearch] = useState('');
@@ -69,7 +68,7 @@ const Manager: React.FC = () => {
                             {filteredCredentials?.map((credential, index) => (
                                 <CredentialCard
                                     key={index}
-                                    id={index}
+                                    uid={credential.uid}
                                     type={credential.type}
                                     credentials={credential.credential}
                                 />

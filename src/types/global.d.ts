@@ -1,5 +1,5 @@
 type TCredential = {
-    id: number;
+    uid: string;
     type: 'account' | 'keypair';
     credential: {
         host: string;

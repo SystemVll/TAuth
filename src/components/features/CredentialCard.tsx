@@ -1,11 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@Components/ui/button';
 import { Card, CardHeader } from '@Components/ui/card';
-import { Textarea } from '@Components/ui/textarea';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,11 +11,13 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@Components/ui/dropdown-menu';
-
+import { Textarea } from '@Components/ui/textarea';
 import Session from '@Services/Session';
+import { useQueryClient } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 
 type CredentialCardProps = {
-    id: number;
+    uid: string;
     type: 'account' | 'keypair';
     credentials: {
         website?: string;
@@ -32,7 +31,7 @@ type CredentialCardProps = {
 };
 
 const CredentialCard: React.FC<CredentialCardProps> = ({
-    id,
+    uid,
     type,
     credentials: {
         website,
@@ -50,7 +49,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
     const removeCredential = async () => {
         await invoke('remove_credentials', {
             password: Session.get('password'),
-            index: id,
+            uid: uid,
         });
 
         queryClient.invalidateQueries({
@@ -59,7 +58,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
     };
 
     const showTwoFactor = async () => {
-        const element = document.getElementById(`show-${id}`);
+        const element = document.getElementById(`show-${uid}`);
 
         if (element!.innerText !== 'Show') {
             return;
@@ -67,7 +66,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 
         const { code } = (await invoke('resolve_twofactor', {
             password: Session.get('password'),
-            index: id,
+            uid: uid,
         })) as { code: string };
 
         setTwoFactorCode(code);
@@ -80,7 +79,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 
         setTimeout(() => {
             clearInterval(interval);
-            document.getElementById(`show-${id}`)!.innerText = 'Show';
+            document.getElementById(`show-${uid}`)!.innerText = 'Show';
 
             setTwoFactorCode(' - - - - - - ');
         }, 6000);
@@ -155,7 +154,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                                         <Button
                                             className="rounded-r-none w-full bg-[#4d3600] hover:bg-[#4d3600] border-[#ffc233] hover:text-[#c2c2c2]"
                                             variant="outline"
-                                            id={`show-${id}`}
+                                            id={`show-${uid}`}
                                             onClick={showTwoFactor}
                                         >
                                             Show

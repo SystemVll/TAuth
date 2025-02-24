@@ -1,17 +1,23 @@
 use libreauth::oath::TOTPBuilder;
 use serde_json::{json, Value};
+use uuid::Uuid;
 
 mod driver;
 
 #[tauri::command]
-fn resolve_twofactor(password: &str, index: i64) -> Value {
+fn resolve_twofactor(password: &str, uid: &str) -> Value {
     let mut container = driver::read(password);
 
     let credentials = container.as_array_mut().unwrap();
 
-    let credential = credentials.get_mut(index as usize).unwrap();
+    let credential = credentials.iter_mut().find(|credential| {
+        let credential = credential.as_object().unwrap();
+        let id = credential.get("uid").unwrap().as_str().unwrap();
 
-    let credential_obj = credential.as_object_mut().unwrap();
+        id == uid
+    });
+
+    let credential_obj = credential.unwrap().as_object_mut().unwrap();
 
     let credentials = credential_obj
         .get_mut("credential")
@@ -29,11 +35,16 @@ fn resolve_twofactor(password: &str, index: i64) -> Value {
 }
 
 #[tauri::command]
-fn remove_credentials(password: &str, index: i64) -> Value {
+fn remove_credentials(password: &str, uid: &str) -> Value {
     let mut container = driver::read(password);
     let credentials = container.as_array_mut().unwrap();
 
-    credentials.remove(index as usize);
+    credentials.retain(|credential| {
+        let credential = credential.as_object().unwrap();
+        let id = credential.get("uid").unwrap().as_str().unwrap();
+
+        id != uid
+    });
 
     driver::write(password, json!(credentials));
 
@@ -45,8 +56,12 @@ fn remove_credentials(password: &str, index: i64) -> Value {
 #[tauri::command]
 fn add_credential(password: &str, credential_type: &str, credential: Value) -> Value {
     let mut container = driver::read(password);
+
+    let uid = Uuid::new_v4().to_string();
+
     let credentials = container.as_array_mut().unwrap();
     credentials.push(json!({
+        "uid": uid,
         "type": credential_type,
         "credential": credential
     }));
@@ -56,31 +71,6 @@ fn add_credential(password: &str, credential_type: &str, credential: Value) -> V
     let response: Value = json!({ "success": true });
 
     response
-}
-
-#[tauri::command]
-fn register(password: &str) -> Value {
-    driver::write(password, json!([]));
-
-    let response: Value = json!({ "success": true });
-
-    response
-}
-
-#[tauri::command]
-fn login(password: &str) -> bool {
-    let container = driver::read(password);
-
-    if container.is_array() {
-        return true;
-    }
-
-    false
-}
-
-#[tauri::command]
-fn exists() -> bool {
-    std::path::Path::new("data/container.encrypted").exists()
 }
 
 #[tauri::command]
@@ -116,6 +106,31 @@ fn get_credentials(password: &str) -> Vec<Value> {
         .collect();
 
     response
+}
+
+#[tauri::command]
+fn register(password: &str) -> Value {
+    driver::write(password, json!([]));
+
+    let response: Value = json!({ "success": true });
+
+    response
+}
+
+#[tauri::command]
+fn login(password: &str) -> bool {
+    let container = driver::read(password);
+
+    if container.is_array() {
+        return true;
+    }
+
+    false
+}
+
+#[tauri::command]
+fn exists() -> bool {
+    std::path::Path::new("data/container.encrypted").exists()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

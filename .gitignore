@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Vault files
-*.encrypted
+src-tauri/data/container.encrypted

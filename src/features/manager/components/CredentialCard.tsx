@@ -103,14 +103,14 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                     <div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-transparent hover:text-[#d6deeb]">
                                     <MoreHorizontal />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuItem
-                                    className="cursor-pointer"
+                                    className="cursor-pointer hover:bg-[#272727] hover:text-[#d6deeb]"
                                     onClick={handleEdit}
                                 >
                                     Edit

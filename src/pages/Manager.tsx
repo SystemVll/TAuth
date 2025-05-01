@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
-import CredentialCard from '@Components/features/CredentialCard';
-import Navbar from '@Components/features/Navbar';
 import { Card, CardHeader } from '@Components/ui/card';
 import { Input } from '@Components/ui/input';
+import CredentialCard from '@Features/manager/components/CredentialCard';
+import Navbar from '@Features/shared/components/Navbar';
 import Session from '@Services/Session';
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';

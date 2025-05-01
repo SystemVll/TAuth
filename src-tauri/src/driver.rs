@@ -4,7 +4,7 @@ use std::{
     io::{Read, Write},
 };
 
-mod vault;
+use crate::vault;
 
 pub fn write(password: &str, credentials: Value) {
     let encrypted_data: Vec<u8> = vault::encrypt(password.to_string(), credentials.to_string());

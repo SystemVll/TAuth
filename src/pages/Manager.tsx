@@ -48,22 +48,22 @@ const Manager: React.FC = () => {
     });
 
     return (
-        <div className="flex flex-colflex">
+        <div className="flex flex-col min-h-screen">
             <Navbar />
-            <div className="container mx-auto p-4 pt-20 flex-1">
-                <Card className="sticky top-20 z-10">
-                    <CardHeader className="p-3">
-                        <Input
-                            placeholder="Search here ..."
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </CardHeader>
-                </Card>
-                <ScrollArea
-                    /* style={{ height: 'calc(100vh - 11rem)' }} */
-                    className="mt-4"
-                >
-                    <div className="mt-4">
+            <div className="container mx-auto p-4 pt-20 flex-1 relative">
+                <div className="sticky top-0 pt-2 pb-4 z-20 bg-background">
+                    <Card>
+                        <CardHeader className="p-3">
+                            <Input
+                                placeholder="Search here ..."
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </CardHeader>
+                    </Card>
+                    <div className="h-6 bg-gradient-to-b from-background to-transparent absolute bottom-0 left-0 right-0 translate-y-full pointer-events-none"></div>
+                </div>
+                <ScrollArea>
+                    <div className="pt-3">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {filteredCredentials?.map((credential, index) => (
                                 <CredentialCard
@@ -77,7 +77,7 @@ const Manager: React.FC = () => {
                     </div>
                 </ScrollArea>
                 {filteredCredentials?.length === 0 && (
-                    <Card className="p-3 w-full text-center text-gray-500">
+                    <Card className="p-3 w-full text-center text-gray-500 mt-4">
                         No credentials found
                     </Card>
                 )}

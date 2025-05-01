@@ -3,6 +3,7 @@ use serde_json::{json, Value};
 use uuid::Uuid;
 
 mod driver;
+mod vault;
 
 #[tauri::command]
 fn resolve_twofactor(password: &str, uid: &str) -> Value {
@@ -110,6 +111,8 @@ fn get_credentials(password: &str) -> Vec<Value> {
 
 #[tauri::command]
 fn register(password: &str) -> Value {
+    vault::create();
+
     driver::write(password, json!([]));
 
     let response: Value = json!({ "success": true });

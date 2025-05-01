@@ -2,13 +2,13 @@ import { Component } from 'react';
 
 type Props = {
     type:
-        | 'solid'
-        | 'regular'
-        | 'sharp'
-        | 'light'
-        | 'brands'
-        | 'thin'
-        | 'duotone';
+    | 'solid'
+    | 'regular'
+    | 'sharp'
+    | 'light'
+    | 'brands'
+    | 'thin'
+    | 'duotone';
     icon: string;
     size?: string;
     flip?: 'horizontal' | 'vertical';

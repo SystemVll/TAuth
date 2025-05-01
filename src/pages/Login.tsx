@@ -1,19 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { invoke } from '@tauri-apps/api/core';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Input } from '@Components/ui/input';
-import {
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-} from '@/components/ui/card';
-
-import Session from '@Services/Session';
-
+import { CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import Logo from '@Assets/logo.png';
+import { Input } from '@Components/ui/input';
+import Session from '@Services/Session';
+import { invoke } from '@tauri-apps/api/core';
 
 type Inputs = {
     password: string;

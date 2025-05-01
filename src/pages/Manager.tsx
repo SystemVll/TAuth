@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardHeader } from '@Components/ui/card';
@@ -11,6 +11,7 @@ import { invoke } from '@tauri-apps/api/core';
 
 const Manager: React.FC = () => {
     const [search, setSearch] = useState('');
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     const { data: credentials } = useQuery({
         queryKey: ['credentials'],
@@ -48,7 +49,7 @@ const Manager: React.FC = () => {
     });
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen hide-scrollbar">
             <Navbar />
             <div className="container mx-auto p-4 pt-20 flex-1 relative">
                 <div className="sticky top-0 pt-2 pb-4 z-20 bg-background">
@@ -62,20 +63,22 @@ const Manager: React.FC = () => {
                     </Card>
                     <div className="h-6 bg-gradient-to-b from-background to-transparent absolute bottom-0 left-0 right-0 translate-y-full pointer-events-none"></div>
                 </div>
-                <ScrollArea>
-                    <div className="pt-3">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredCredentials?.map((credential, index) => (
-                                <CredentialCard
-                                    key={index}
-                                    uid={credential.uid}
-                                    type={credential.type}
-                                    credentials={credential.credential}
-                                />
-                            ))}
+                <div className="relative" ref={scrollRef}>
+                    <ScrollArea className="pb-10">
+                        <div className="pt-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {filteredCredentials?.map((credential, index) => (
+                                    <CredentialCard
+                                        key={index}
+                                        uid={credential.uid}
+                                        type={credential.type}
+                                        credentials={credential.credential}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </ScrollArea>
+                    </ScrollArea>
+                </div>
                 {filteredCredentials?.length === 0 && (
                     <Card className="p-3 w-full text-center text-gray-500 mt-4">
                         No credentials found

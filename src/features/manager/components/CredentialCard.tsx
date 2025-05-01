@@ -4,14 +4,11 @@ import { useState } from 'react';
 import { Button } from '@Components/ui/button';
 import { Card, CardHeader } from '@Components/ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuShortcut,
-    DropdownMenuTrigger,
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuShortcut,
+    DropdownMenuTrigger
 } from '@Components/ui/dropdown-menu';
 import { Textarea } from '@Components/ui/textarea';
+import EditCredential from '@Features/manager/components/EditCredential';
 import Session from '@Services/Session';
 import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
@@ -45,6 +42,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 }) => {
     const queryClient = useQueryClient();
     const [twoFactorCode, setTwoFactorCode] = useState(' - - - - - - ');
+    const [editOpen, setEditOpen] = useState(false);
 
     const removeCredential = async () => {
         await invoke('remove_credentials', {
@@ -89,6 +87,10 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
         navigator.clipboard.writeText(text);
     };
 
+    const handleEdit = () => {
+        setEditOpen(true);
+    };
+
     return (
         <Card className="rounded-md">
             <CardHeader className="p-3">
@@ -107,7 +109,16 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                {type === 'account' && (
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={handleEdit}
+                                >
+                                    Edit
+                                    <DropdownMenuShortcut>
+                                        ⌘E
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                                {type === 'account' && twoFactor && (
                                     <DropdownMenuItem className="cursor-pointer">
                                         Two Factor
                                     </DropdownMenuItem>
@@ -202,6 +213,21 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                     )}
                 </div>
             </CardHeader>
+            <EditCredential
+                isOpen={editOpen}
+                onOpenChange={setEditOpen}
+                uid={uid}
+                type={type}
+                credentials={{
+                    website,
+                    username,
+                    password,
+                    twoFactor: twoFactor ? 'true' : '',
+                    privateKey,
+                    publicKey,
+                    host
+                }}
+            />
         </Card>
     );
 };

@@ -1,41 +1,25 @@
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { invoke } from '@tauri-apps/api/core';
+import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { useState } from 'react';
-
-import { Popover } from '@Components/ui/popover';
-
-import { Button } from '@Components/ui/button';
-import { Input } from '@Components/ui/input';
-import { Label } from '@Components/ui/label';
-import { Textarea } from '@Components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@Components/ui/tabs';
-import { CardHeader, CardDescription, CardContent } from '@Components/ui/card';
-import { PopoverContent, PopoverTrigger } from '@Components/ui/popover';
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from '@Components/ui/command';
-
-import Icon from '@Components/features/Icon';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
-
-import Session from '@Services/Session';
+import { Button } from '@Components/ui/button';
+import { CardContent, CardDescription, CardHeader } from '@Components/ui/card';
 import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from '../ui/drawer';
+    Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList
+} from '@Components/ui/command';
+import {
+    Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger
+} from '@Components/ui/drawer';
+import { Input } from '@Components/ui/input';
+import { Label } from '@Components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@Components/ui/popover';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@Components/ui/tabs';
+import { Textarea } from '@Components/ui/textarea';
+import Icon from '@Features/shared/components/Icon';
+import Session from '@Services/Session';
+import { useQueryClient } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 
 const AddCredential: React.FC = () => {
     const queryClient = useQueryClient();
@@ -130,7 +114,7 @@ const AddCredential: React.FC = () => {
         <Drawer>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    <Icon type="solid" icon="plus" />
+                    <Plus />
                     Add New
                 </Button>
             </DrawerTrigger>
@@ -183,10 +167,10 @@ const AddCredential: React.FC = () => {
 
                                         {errorsAccount.website?.type ===
                                             'required' && (
-                                            <small className="text-gray-500">
-                                                Website is required.
-                                            </small>
-                                        )}
+                                                <small className="text-gray-500">
+                                                    Website is required.
+                                                </small>
+                                            )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Username/Email</Label>
@@ -198,10 +182,10 @@ const AddCredential: React.FC = () => {
                                         />
                                         {errorsAccount.username?.type ===
                                             'required' && (
-                                            <small className="text-gray-500">
-                                                Username/Email is required.
-                                            </small>
-                                        )}
+                                                <small className="text-gray-500">
+                                                    Username/Email is required.
+                                                </small>
+                                            )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Password</Label>
@@ -213,10 +197,10 @@ const AddCredential: React.FC = () => {
                                         />
                                         {errorsAccount.password?.type ===
                                             'required' && (
-                                            <small className="text-gray-500">
-                                                Password is required.
-                                            </small>
-                                        )}
+                                                <small className="text-gray-500">
+                                                    Password is required.
+                                                </small>
+                                            )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label>2FA - Optional</Label>
@@ -266,12 +250,12 @@ const AddCredential: React.FC = () => {
                                                         >
                                                             {schemeValue
                                                                 ? schemes.find(
-                                                                      (
-                                                                          scheme,
-                                                                      ) =>
-                                                                          scheme.value ===
-                                                                          schemeValue,
-                                                                  )?.label
+                                                                    (
+                                                                        scheme,
+                                                                    ) =>
+                                                                        scheme.value ===
+                                                                        schemeValue,
+                                                                )?.label
                                                                 : 'Scheme...'}
                                                             <ChevronsUpDown className="opacity-50" />
                                                         </Button>
@@ -354,10 +338,10 @@ const AddCredential: React.FC = () => {
                                                 />
                                                 {errorsKeyPair.host?.type ===
                                                     'required' && (
-                                                    <small className="text-gray-500">
-                                                        Host is required.
-                                                    </small>
-                                                )}
+                                                        <small className="text-gray-500">
+                                                            Host is required.
+                                                        </small>
+                                                    )}
                                             </div>
                                         </div>
                                     </div>
@@ -371,10 +355,10 @@ const AddCredential: React.FC = () => {
                                         />
                                         {errorsKeyPair.publicKey?.type ===
                                             'required' && (
-                                            <small className="text-gray-500">
-                                                Public key is required.
-                                            </small>
-                                        )}
+                                                <small className="text-gray-500">
+                                                    Public key is required.
+                                                </small>
+                                            )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Private Key</Label>
@@ -385,10 +369,10 @@ const AddCredential: React.FC = () => {
                                         />
                                         {errorsKeyPair.privateKey?.type ===
                                             'required' && (
-                                            <small className="text-gray-500">
-                                                Private key is required.
-                                            </small>
-                                        )}
+                                                <small className="text-gray-500">
+                                                    Private key is required.
+                                                </small>
+                                            )}
                                     </div>
                                 </CardContent>
                                 <DrawerFooter>

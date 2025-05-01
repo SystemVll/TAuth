@@ -1,6 +1,5 @@
-import AddCredential from '@Components/features/AddCredential';
-
 import Logo from '@Assets/logo.png';
+import AddCredential from '@Features/manager/components/AddCredential';
 
 const Navbar: React.FC = () => {
     return (

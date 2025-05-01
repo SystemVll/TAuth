@@ -1,7 +1,19 @@
+use std::{fs::File, io::Write};
+
 use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Error, Key, Nonce,
 };
+
+pub fn create() {
+    let _ = std::fs::create_dir_all("data").map_err(|e| e.to_string());
+
+    let mut descriptor = File::create("data/container.encrypted")
+        .map_err(|e| e.to_string())
+        .unwrap();
+
+    let _ = descriptor.write_all(b"").map_err(|e| e.to_string());
+}
 
 pub fn decrypt(mut password: String, encrypted_data: Vec<u8>) -> Result<String, Error> {
     assert!(

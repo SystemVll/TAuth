@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Box, Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
@@ -57,8 +57,6 @@ const AddCredential: React.FC = () => {
             credential['twoFactor'] = twoFactor.toUpperCase();
         }
 
-        console.log(credential);
-
         await invoke('add_credential', {
             password: Session.get('password'),
             credentialType: 'account',
@@ -68,6 +66,8 @@ const AddCredential: React.FC = () => {
         await queryClient.invalidateQueries({
             queryKey: ['credentials'],
         });
+
+        setOpen(false);
     };
 
     const onSubmitKeyPair: SubmitHandler<FieldValues> = async (data) => {
@@ -114,7 +114,7 @@ const AddCredential: React.FC = () => {
         <Drawer>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    <Plus />
+                    <Box size={16} />
                     Add New
                 </Button>
             </DrawerTrigger>

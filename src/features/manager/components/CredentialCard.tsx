@@ -118,11 +118,6 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                                         ⌘E
                                     </DropdownMenuShortcut>
                                 </DropdownMenuItem>
-                                {type === 'account' && twoFactor && (
-                                    <DropdownMenuItem className="cursor-pointer">
-                                        Two Factor
-                                    </DropdownMenuItem>
-                                )}
                                 <DropdownMenuItem
                                     className="text-red-500 hover:bg-red-100 cursor-pointer"
                                     onClick={removeCredential}

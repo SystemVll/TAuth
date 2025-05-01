@@ -49,7 +49,7 @@ const Manager: React.FC = () => {
     });
 
     return (
-        <div className="flex flex-col min-h-screen hide-scrollbar">
+        <div className="flex flex-col min-h-screen">
             <Navbar />
             <div className="container mx-auto p-4 pt-20 flex-1 relative">
                 <div className="sticky top-0 pt-2 pb-4 z-20 bg-background">

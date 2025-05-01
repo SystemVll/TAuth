@@ -103,7 +103,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                     <div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-transparent active:border-none hover:text-[#d6deeb]">
                                     <MoreHorizontal />
                                 </Button>
                             </DropdownMenuTrigger>

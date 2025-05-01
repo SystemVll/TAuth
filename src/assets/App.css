@@ -87,12 +87,13 @@
     }
 }
 
-html, body {
+html,
+body {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer and Edge */
-  }
-  
-  html::-webkit-scrollbar, 
-  body::-webkit-scrollbar {
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
     display: none; /* Chrome, Safari, and Opera */
-  }
+}

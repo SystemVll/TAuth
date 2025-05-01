@@ -55,6 +55,28 @@ fn remove_credentials(password: &str, uid: &str) -> Value {
 }
 
 #[tauri::command]
+fn update_credential(password: &str, uid: &str, credential_type: &str, credential: Value) -> Value {
+    let mut container = driver::read(password);
+    let credentials = container.as_array_mut().unwrap();
+
+    for item in credentials.iter_mut() {
+        let credential_obj = item.as_object_mut().unwrap();
+        let id = credential_obj.get("uid").unwrap().as_str().unwrap();
+
+        if id == uid {
+            credential_obj.insert("type".to_string(), json!(credential_type));
+            credential_obj.insert("credential".to_string(), credential.clone());
+            break;
+        }
+    }
+
+    driver::write(password, json!(credentials));
+
+    let response: Value = json!({ "success": true });
+    response
+}
+
+#[tauri::command]
 fn add_credential(password: &str, credential_type: &str, credential: Value) -> Value {
     let mut container = driver::read(password);
 
@@ -146,6 +168,7 @@ pub fn run() {
             exists,
             get_credentials,
             add_credential,
+            update_credential,
             remove_credentials,
             resolve_twofactor
         ])

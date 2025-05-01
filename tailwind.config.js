@@ -18,7 +18,7 @@ export default {
   			},
   			popover: {
   				DEFAULT: '#181818',
-  				foreground: '#c2c2c2'
+  				foreground: '#c2c2c2',
   			},
   			primary: {
   				DEFAULT: '#d3f4f8',
@@ -33,8 +33,8 @@ export default {
   				foreground: 'hsl(var(--muted-foreground))'
   			},
   			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
+  				DEFAULT: '#383838',
+  				foreground: '#c2c2c2'
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
@@ -42,7 +42,7 @@ export default {
   			},
   			border: '#383838',
   			input: '#383838',
-  			ring: 'hsl(var(--ring))',
+  			ring: 'transparent',
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',

@@ -1,13 +1,12 @@
 # 🔐 TAuth: Secure Credential Manager
 
-![splash](https://github.com/user-attachments/assets/17b7c33f-945f-4a1b-9264-c6d5efa96af8)
+<p align="center">
+  <a href="https://github.com/SystemVll/TAuth/releases/latest" target="_blank">
+    <img src="https://img.shields.io/badge/⬇️%20Download%20Latest-TAuth-blueviolet?style=for-the-badge&logo=github" alt="Download TAuth" style="margin-bottom: 20px;"/>
+  </a>
+</p>
 
 > **TAuth** is a modern, secure credential manager built with Tauri, React, and Rust. Keep your passwords, 2FA codes, and SSH keys safe in one elegant application! ✨
-
-<div align="center">
-    <img height="520" src="https://github.com/user-attachments/assets/cd08254c-8266-470b-a0ea-ddf0b0b7e17a" />
-    <img height="520" src="https://github.com/user-attachments/assets/27563d3a-6452-42a8-8729-b9dafd7681c2" />
-</div>
 
 ## ✨ Features
 

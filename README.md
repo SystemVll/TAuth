@@ -10,7 +10,7 @@
 
 ## 👐 Why TAuth?
 
-TAuth was created as a simple, open alternative to other authentication apps that may be closed source or store your data in the cloud without transparency. With TAuth, your credentials are always encrypted and stored locally—giving you full control and peace of mind. Make your big brother smaller day after day.
+TAuth was created as a simple, open alternative to other authentication apps that may be closed source or store your data in the cloud without transparency (Google). With TAuth, your credentials are always encrypted and stored locally—giving you full control and peace of mind. Make your big brother smaller day after day.
 
 ## ✨ Features
 

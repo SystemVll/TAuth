@@ -1,9 +1,9 @@
-use std::{fs::File, io::Write, path::PathBuf};
-
 use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Error, Key, Nonce,
 };
+use std::{fs::File, io::Write, path::PathBuf};
+use zeroize::Zeroize;
 
 pub fn get_data_dir() -> PathBuf {
     let data_dir = std::env::var("APPDATA").unwrap();
@@ -39,7 +39,10 @@ pub fn decrypt(mut password: String, encrypted_data: Vec<u8>) -> Result<String, 
         password = password + "\x21".repeat(size).as_str();
     }
 
-    let key = Key::<Aes256Gcm>::from_slice(password.as_bytes());
+    let key_bytes = password.as_bytes().to_vec();
+    password.zeroize();
+
+    let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
 
     let (nonce_arr, ciphered_data) = encrypted_data.split_at(12);
     let nonce = Nonce::from_slice(nonce_arr);
@@ -47,8 +50,8 @@ pub fn decrypt(mut password: String, encrypted_data: Vec<u8>) -> Result<String, 
     let cipher = Aes256Gcm::new(key);
 
     let plaintext = cipher.decrypt(nonce, ciphered_data)?;
-
     let decrypted_string = String::from_utf8(plaintext).map_err(|_| aes_gcm::Error)?;
+
     Ok(decrypted_string)
 }
 
@@ -63,7 +66,10 @@ pub fn encrypt(mut password: String, plaintext: String) -> Vec<u8> {
         password = password + "\x21".repeat(size).as_str();
     }
 
-    let key = Key::<Aes256Gcm>::from_slice(password.as_bytes());
+    let key_bytes = password.as_bytes().to_vec();
+    password.zeroize();
+
+    let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
     let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
 
     let cipher = Aes256Gcm::new(key);

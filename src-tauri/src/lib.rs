@@ -155,7 +155,8 @@ fn login(password: &str) -> bool {
 
 #[tauri::command]
 fn exists() -> bool {
-    std::path::Path::new("data/container.encrypted").exists()
+    let container_path = vault::get_container_path();
+    std::path::Path::new(&container_path).exists()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

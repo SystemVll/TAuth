@@ -1,14 +1,27 @@
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, path::PathBuf};
 
 use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Error, Key, Nonce,
 };
 
-pub fn create() {
-    let _ = std::fs::create_dir_all("data").map_err(|e| e.to_string());
+pub fn get_data_dir() -> PathBuf {
+    let data_dir = std::env::var("APPDATA").unwrap();
+    let app_dir = data_dir + "\\com.tauth.app";
+    PathBuf::from(app_dir)
+}
 
-    let mut descriptor = File::create("data/container.encrypted")
+pub fn get_container_path() -> PathBuf {
+    if !get_data_dir().exists() {
+        std::fs::create_dir_all(get_data_dir()).unwrap();
+    }
+
+    get_data_dir().join("container.encrypted")
+}
+
+pub fn create() {
+    let container_path = get_container_path();
+    let mut descriptor = File::create(container_path)
         .map_err(|e| e.to_string())
         .unwrap();
 

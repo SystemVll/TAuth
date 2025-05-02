@@ -23,7 +23,7 @@ Found a security issue? We want to hear from you!
 Help us keep TAuth safe for everyone by following these steps:
 
 1. **Contact Us:**  
-   Email us at [security@tauth.app](mailto:security@tauth.app) with details of the vulnerability.
+   Email us at [balmy-myself-gizmo@duck.com](mailto:balmy-myself-gizmo@duck.com) with details of the vulnerability.
 
 2. **What to Expect:**
 

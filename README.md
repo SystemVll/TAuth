@@ -8,6 +8,10 @@
 
 > **TAuth** is a modern, secure credential manager built with Tauri, React, and Rust. Keep your passwords, 2FA codes, and SSH keys safe in one elegant application! ✨
 
+## 👐 Why TAuth?
+
+TAuth was created as a simple, open alternative to other authentication apps that may be closed source or store your data in the cloud without transparency. With TAuth, your credentials are always encrypted and stored locally—giving you full control and peace of mind. Make your big brother smaller day after day.
+
 ## ✨ Features
 
 -   🔑 **Password Management** — Securely store and organize all your passwords

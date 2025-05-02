@@ -1,8 +1,8 @@
 [package]
 name = "tauth"
-version = "0.1.0"
+version = "0.1.1"
 description = "A TOTP and password manager written using Tauri"
-authors = ["Inplex-sys"]
+authors = ["SystemVll"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,7 +11,7 @@ edition = "2021"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "pc_auth_lib"
+name = "tauth"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -27,3 +27,7 @@ totp-rs = "^5.0"
 windows = { version = "0.52.0", features = ["Win32_Storage_FileSystem", "Win32_Foundation"] }
 libreauth = "0.17.0"
 uuid = { version = "1.14.0", features = ["v4"] }
+zeroize = { version = "1.6", features = ["zeroize_derive"] }
+secrecy = "0.8"
+memsec = "0.6.3"
+libc = "0.2.146"

@@ -19,6 +19,7 @@ TAuth was created as a simple, open alternative to other authentication apps tha
 -   🔐 **Key Pair Management** — Organize and access your SSH key pairs effortlessly
 -   🛡️ **End-to-End Encryption** — All your data is encrypted locally; nothing is stored in the cloud
 -   🖥️ **Cross-Platform** — Works on Windows, macOS, and Linux
+-   💾 **Memory Attack Resistant** — Sensitive data is securely handled in memory to prevent extraction through memory dumps or cold boot attacks
 
 ## 🚀 Getting Started
 

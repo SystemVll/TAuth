@@ -24,6 +24,7 @@ import { invoke } from '@tauri-apps/api/core';
 const AddCredential: React.FC = () => {
     const queryClient = useQueryClient();
 
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [open, setOpen] = useState(false);
     const [schemeValue, setSchemeValue] = useState('ssh://');
 
@@ -67,7 +68,7 @@ const AddCredential: React.FC = () => {
             queryKey: ['credentials'],
         });
 
-        setOpen(false);
+        setDrawerOpen(false);
     };
 
     const onSubmitKeyPair: SubmitHandler<FieldValues> = async (data) => {
@@ -85,6 +86,8 @@ const AddCredential: React.FC = () => {
         await queryClient.invalidateQueries({
             queryKey: ['credentials'],
         });
+
+        setDrawerOpen(false);
     };
 
     const schemes = [
@@ -111,9 +114,9 @@ const AddCredential: React.FC = () => {
     ];
 
     return (
-        <Drawer>
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerTrigger asChild>
-                <Button variant="default">
+                <Button variant="default" onClick={() => setDrawerOpen(true)}>
                     <Box size={16} />
                     Add New
                 </Button>

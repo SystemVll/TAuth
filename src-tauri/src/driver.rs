@@ -7,11 +7,10 @@ use std::{
 use crate::vault;
 
 pub fn write(password: &str, credentials: Value) {
+    let container_path = vault::get_container_path();
     let encrypted_data: Vec<u8> = vault::encrypt(password.to_string(), credentials.to_string());
 
-    let mut descriptor = File::create("data/container.encrypted")
-        .map_err(|e| e.to_string())
-        .unwrap();
+    let mut descriptor = File::create(container_path).expect("failed to create file");
 
     let _ = descriptor
         .write_all(&encrypted_data)
@@ -19,7 +18,8 @@ pub fn write(password: &str, credentials: Value) {
 }
 
 pub fn read(password: &str) -> Value {
-    let mut descriptor: File = File::open("data/container.encrypted").expect("failed to open file");
+    let container_path = vault::get_container_path();
+    let mut descriptor: File = File::open(container_path).expect("failed to open file");
     let mut contents: Vec<u8> = Vec::new();
 
     descriptor

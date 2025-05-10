@@ -97,8 +97,11 @@ fn add_credential(password: &str, credential_type: &str, credential: Value) -> V
 }
 
 #[tauri::command]
-fn get_credentials(password: &str) -> Vec<Value> {
+fn get_credentials(password: &str) -> Result<Vec<Value>, String> {
     let data = driver::read(password);
+    if data.is_null() {
+        return Err("Authentication failed. Invalid password.".to_string());
+    }
 
     let response: Vec<Value> = data
         .as_array()
@@ -128,7 +131,7 @@ fn get_credentials(password: &str) -> Vec<Value> {
         })
         .collect();
 
-    response
+    Ok(response)
 }
 
 #[tauri::command]

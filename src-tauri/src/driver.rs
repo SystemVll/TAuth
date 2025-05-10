@@ -68,19 +68,39 @@ pub fn write(password: &str, credentials: Value) {
 
 pub fn read(password: &str) -> Value {
     let container_path = vault::get_container_path();
-    let mut descriptor: File = File::open(container_path).expect("failed to open file");
+
+    let mut descriptor: File = match File::open(container_path) {
+        Ok(file) => file,
+        Err(_) => return Value::Null,
+    };
+
     let mut contents: Vec<u8> = Vec::new();
 
-    descriptor
-        .read_to_end(&mut contents)
-        .expect("failed to read file");
+    if descriptor.read_to_end(&mut contents).is_err() {
+        return Value::Null;
+    }
 
     let sensitive_password = SensitiveData::new(password.to_string());
 
     let mut decrypted_string =
-        vault::decrypt(sensitive_password.expose().to_string(), contents).unwrap();
+        match vault::decrypt(sensitive_password.expose().to_string(), contents) {
+            Ok(decrypted) => decrypted,
+            Err(_) => return Value::Null,
+        };
 
-    let container = serde_json::from_str(&decrypted_string).expect("failed to parse JSON");
+    let container = match serde_json::from_str(&decrypted_string) {
+        Ok(json) => json,
+        Err(_) => {
+            unsafe {
+                let ptr = decrypted_string.as_ptr();
+                let len = decrypted_string.len();
+                memzero(ptr as *mut u8, len);
+            }
+            decrypted_string.zeroize();
+
+            return Value::Null;
+        }
+    };
 
     unsafe {
         let ptr = decrypted_string.as_ptr();

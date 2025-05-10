@@ -2,26 +2,34 @@ import { motion } from 'framer-motion';
 import { Boxes } from 'lucide-react';
 import { useRef, useState } from 'react';
 
+import { useVault } from '@/context/VaultContext';
 import { Card, CardHeader } from '@Components/ui/card';
 import { Input } from '@Components/ui/input';
 import { ScrollArea } from '@Components/ui/scroll-area';
 import CredentialCard from '@Features/manager/components/CredentialCard';
 import Navbar from '@Features/shared/components/Navbar';
-import Session from '@Services/Session';
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
 const Manager: React.FC = () => {
     const [search, setSearch] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { password, updateActivity } = useVault();
 
     const { data: credentials } = useQuery({
         queryKey: ['credentials'],
         queryFn: async () => {
+            updateActivity();
+
+            if (!password) {
+                throw new Error('Vault is locked');
+            }
+
             return (await invoke('get_credentials', {
-                password: Session.get('password'),
+                password,
             })) as TCredential[];
         },
+        enabled: !!password,
     });
 
     const filteredCredentials = credentials?.filter((credential) => {
@@ -50,8 +58,16 @@ const Manager: React.FC = () => {
         return false;
     });
 
+    const handleInteraction = () => {
+        updateActivity();
+    };
+
     return (
-        <div className="flex flex-col min-h-screen">
+        <div
+            className="flex flex-col min-h-screen"
+            onClick={handleInteraction}
+            onKeyDown={handleInteraction}
+        >
             <Navbar />
             <div className="container mx-auto p-4 pt-20 flex-1 relative">
                 <div className="sticky top-0 pt-2 pb-4 z-20 bg-background">
@@ -85,6 +101,7 @@ const Manager: React.FC = () => {
                                         className="col-span-full flex justify-center"
                                     >
                                         <Card className="p-8 w-full max-w-md flex flex-col items-center justify-center border-2 border-dashed shadow-2xl relative overflow-hidden">
+                                            {/* Existing animation code... */}
                                             <motion.div
                                                 className="absolute -top-10 -left-10 w-40 h-40 rounded-full opacity-30 blur-2xl"
                                                 animate={{ scale: [1, 1.2, 1], rotate: [0, 30, 0] }}

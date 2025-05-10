@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
+import { useVault } from '@/context/VaultContext';
 import Logo from '@Assets/logo.png';
 import { Input } from '@Components/ui/input';
-import Session from '@Services/Session';
 import { invoke } from '@tauri-apps/api/core';
 
 type Inputs = {
@@ -17,6 +17,7 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { setPassword } = useVault();
 
     const {
         register,
@@ -44,7 +45,7 @@ const Login: React.FC = () => {
             const response = await invoke('login', { password });
 
             if (response) {
-                Session.set('password', password);
+                setPassword(password);
                 return navigate('/manager');
             }
 

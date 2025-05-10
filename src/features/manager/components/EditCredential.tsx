@@ -1,7 +1,8 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
+import { useVault } from '@/context/VaultContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@Components/ui/button';
 import { CardContent, CardDescription, CardHeader } from '@Components/ui/card';
@@ -15,7 +16,6 @@ import { Input } from '@Components/ui/input';
 import { Label } from '@Components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@Components/ui/popover';
 import { Textarea } from '@Components/ui/textarea';
-import Session from '@Services/Session';
 import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -43,8 +43,10 @@ const EditCredential: React.FC<EditCredentialProps> = ({
     credentials
 }) => {
     const queryClient = useQueryClient();
+    const { password: vaultPassword, updateActivity } = useVault();
     const [open, setOpen] = useState(false);
     const [schemeValue, setSchemeValue] = useState('ssh://');
+    const formInitialized = useRef(false);
 
     const {
         register: registerAccount,
@@ -62,30 +64,42 @@ const EditCredential: React.FC<EditCredentialProps> = ({
 
     useEffect(() => {
         if (isOpen) {
-            if (type === 'account') {
-                resetAccountForm({
-                    website: credentials.website || '',
-                    username: credentials.username || '',
-                    password: credentials.password || '',
-                    twoFactor: credentials.twoFactor || ''
-                });
-            } else if (type === 'keypair') {
-                if (credentials.host) {
-                    const hostParts = credentials.host.split('://');
-                    if (hostParts.length > 1) {
-                        setSchemeValue(`${hostParts[0]}://`);
-                    }
-                    resetKeyPairForm({
-                        host: hostParts.length > 1 ? hostParts[1] : credentials.host,
-                        publicKey: credentials.publicKey || '',
-                        privateKey: credentials.privateKey || ''
+            updateActivity();
+
+            const initialOpen = !formInitialized.current;
+
+            if (initialOpen) {
+                if (type === 'account') {
+                    resetAccountForm({
+                        website: credentials.website || '',
+                        username: credentials.username || '',
+                        password: credentials.password || '',
+                        twoFactor: credentials.twoFactor || ''
                     });
+                } else if (type === 'keypair') {
+                    if (credentials.host) {
+                        const hostParts = credentials.host.split('://');
+                        if (hostParts.length > 1) {
+                            setSchemeValue(`${hostParts[0]}://`);
+                        }
+                        resetKeyPairForm({
+                            host: hostParts.length > 1 ? hostParts[1] : credentials.host,
+                            publicKey: credentials.publicKey || '',
+                            privateKey: credentials.privateKey || ''
+                        });
+                    }
                 }
+
+                formInitialized.current = true;
             }
+        } else {
+            formInitialized.current = false;
         }
     }, [isOpen, credentials, type, resetAccountForm, resetKeyPairForm]);
 
     const onSubmitAccount: SubmitHandler<FieldValues> = async (data) => {
+        updateActivity();
+
         const { website, username, password, twoFactor } = data;
 
         const credential: {
@@ -104,7 +118,7 @@ const EditCredential: React.FC<EditCredentialProps> = ({
         }
 
         await invoke('update_credential', {
-            password: Session.get('password'),
+            password: vaultPassword,
             uid: uid,
             credentialType: 'account',
             credential,
@@ -118,9 +132,11 @@ const EditCredential: React.FC<EditCredentialProps> = ({
     };
 
     const onSubmitKeyPair: SubmitHandler<FieldValues> = async (data) => {
+        updateActivity();
+
         const { publicKey, privateKey, host } = data;
         await invoke('update_credential', {
-            password: Session.get('password'),
+            password: vaultPassword,
             uid: uid,
             credentialType: 'keypair',
             credential: {

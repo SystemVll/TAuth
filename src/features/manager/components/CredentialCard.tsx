@@ -1,6 +1,7 @@
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
+import { useVault } from '@/context/VaultContext';
 import { Button } from '@Components/ui/button';
 import { Card, CardHeader } from '@Components/ui/card';
 import {
@@ -9,7 +10,6 @@ import {
 } from '@Components/ui/dropdown-menu';
 import { Textarea } from '@Components/ui/textarea';
 import EditCredential from '@Features/manager/components/EditCredential';
-import Session from '@Services/Session';
 import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -43,13 +43,16 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
     },
 }) => {
     const queryClient = useQueryClient();
+    const { password: vaultPassword, updateActivity } = useVault();
     const [twoFactorCode, setTwoFactorCode] = useState(' - - - - - - ');
     const [editOpen, setEditOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const removeCredential = async () => {
+        updateActivity();
+
         await invoke('remove_credentials', {
-            password: Session.get('password'),
+            password: vaultPassword,
             uid: uid,
         });
 
@@ -60,6 +63,8 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
     };
 
     const showTwoFactor = async () => {
+        updateActivity();
+
         const element = document.getElementById(`show-${uid}`);
 
         if (element!.innerText !== 'Show') {
@@ -67,7 +72,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
         }
 
         const { code } = (await invoke('resolve_twofactor', {
-            password: Session.get('password'),
+            password: vaultPassword,
             uid: uid,
         })) as { code: string };
 
@@ -92,6 +97,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
     };
 
     const handleEdit = () => {
+        updateActivity();
         setEditOpen(true);
     };
 
@@ -125,7 +131,10 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         className="text-red-500 hover:bg-red-100 cursor-pointer"
-                                        onClick={() => setDeleteDialogOpen(true)}
+                                        onClick={() => {
+                                            updateActivity();
+                                            setDeleteDialogOpen(true);
+                                        }}
                                     >
                                         Delete
                                         <DropdownMenuShortcut>

@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useVault } from '@/context/VaultContext';
 import { Input } from '@Components/ui/input';
-import Session from '@Services/Session';
 import { invoke } from '@tauri-apps/api/core';
 
 type Inputs = {
@@ -19,6 +19,7 @@ const Register: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { setPassword } = useVault();
 
     const {
         register,
@@ -48,7 +49,9 @@ const Register: React.FC = () => {
         try {
             setIsLoading(true);
             await createContainer(data.password);
-            Session.set('password', data.password);
+
+            setPassword(data.password);
+
             navigate('/manager');
         } catch (error) {
             console.error('Registration failed:', error);

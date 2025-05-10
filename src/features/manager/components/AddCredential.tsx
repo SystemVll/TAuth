@@ -2,6 +2,7 @@ import { Box, Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
+import { useVault } from '@/context/VaultContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@Components/ui/button';
 import { CardContent, CardDescription, CardHeader } from '@Components/ui/card';
@@ -17,12 +18,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@Components/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@Components/ui/tabs';
 import { Textarea } from '@Components/ui/textarea';
 import Icon from '@Features/shared/components/Icon';
-import Session from '@Services/Session';
 import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
 const AddCredential: React.FC = () => {
     const queryClient = useQueryClient();
+    const { password, updateActivity } = useVault();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [open, setOpen] = useState(false);
@@ -41,7 +42,9 @@ const AddCredential: React.FC = () => {
     } = useForm();
 
     const onSubmitAccount: SubmitHandler<FieldValues> = async (data) => {
-        const { website, username, password, twoFactor } = data;
+        updateActivity();
+
+        const { website, username, password: accountPassword, twoFactor } = data;
 
         const credential: {
             website: string;
@@ -51,7 +54,7 @@ const AddCredential: React.FC = () => {
         } = {
             website: website,
             username: username,
-            password: password,
+            password: accountPassword,
         };
 
         if (twoFactor != '') {
@@ -59,7 +62,7 @@ const AddCredential: React.FC = () => {
         }
 
         await invoke('add_credential', {
-            password: Session.get('password'),
+            password,
             credentialType: 'account',
             credential,
         });
@@ -72,9 +75,11 @@ const AddCredential: React.FC = () => {
     };
 
     const onSubmitKeyPair: SubmitHandler<FieldValues> = async (data) => {
+        updateActivity();
+
         const { publicKey, privateKey, host } = data;
         await invoke('add_credential', {
-            password: Session.get('password'),
+            password,
             credentialType: 'keypair',
             credential: {
                 publicKey: publicKey,
@@ -88,6 +93,11 @@ const AddCredential: React.FC = () => {
         });
 
         setDrawerOpen(false);
+    };
+
+    const handleOpenDrawer = () => {
+        updateActivity();
+        setDrawerOpen(true);
     };
 
     const schemes = [
@@ -116,7 +126,7 @@ const AddCredential: React.FC = () => {
     return (
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerTrigger asChild>
-                <Button variant="default" onClick={() => setDrawerOpen(true)}>
+                <Button variant="default" onClick={handleOpenDrawer}>
                     <Box size={16} />
                     Add New
                 </Button>

@@ -13,8 +13,8 @@
         "windows": [
             {
                 "title": "TAuth",
-                "width": 800,
-                "height": 600
+                "width": 512,
+                "height": 768
             }
         ],
         "security": {

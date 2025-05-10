@@ -1,5 +1,5 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 import { useVault } from '@/context/VaultContext';
@@ -46,6 +46,7 @@ const EditCredential: React.FC<EditCredentialProps> = ({
     const { password: vaultPassword, updateActivity } = useVault();
     const [open, setOpen] = useState(false);
     const [schemeValue, setSchemeValue] = useState('ssh://');
+    const formInitialized = useRef(false);
 
     const {
         register: registerAccount,
@@ -65,28 +66,36 @@ const EditCredential: React.FC<EditCredentialProps> = ({
         if (isOpen) {
             updateActivity();
 
-            if (type === 'account') {
-                resetAccountForm({
-                    website: credentials.website || '',
-                    username: credentials.username || '',
-                    password: credentials.password || '',
-                    twoFactor: credentials.twoFactor || ''
-                });
-            } else if (type === 'keypair') {
-                if (credentials.host) {
-                    const hostParts = credentials.host.split('://');
-                    if (hostParts.length > 1) {
-                        setSchemeValue(`${hostParts[0]}://`);
-                    }
-                    resetKeyPairForm({
-                        host: hostParts.length > 1 ? hostParts[1] : credentials.host,
-                        publicKey: credentials.publicKey || '',
-                        privateKey: credentials.privateKey || ''
+            const initialOpen = !formInitialized.current;
+
+            if (initialOpen) {
+                if (type === 'account') {
+                    resetAccountForm({
+                        website: credentials.website || '',
+                        username: credentials.username || '',
+                        password: credentials.password || '',
+                        twoFactor: credentials.twoFactor || ''
                     });
+                } else if (type === 'keypair') {
+                    if (credentials.host) {
+                        const hostParts = credentials.host.split('://');
+                        if (hostParts.length > 1) {
+                            setSchemeValue(`${hostParts[0]}://`);
+                        }
+                        resetKeyPairForm({
+                            host: hostParts.length > 1 ? hostParts[1] : credentials.host,
+                            publicKey: credentials.publicKey || '',
+                            privateKey: credentials.privateKey || ''
+                        });
+                    }
                 }
+
+                formInitialized.current = true;
             }
+        } else {
+            formInitialized.current = false;
         }
-    }, [isOpen, credentials, type, resetAccountForm, resetKeyPairForm, updateActivity]);
+    }, [isOpen, credentials, type, resetAccountForm, resetKeyPairForm]);
 
     const onSubmitAccount: SubmitHandler<FieldValues> = async (data) => {
         updateActivity();

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface VaultContextType {
     password: string | null;
@@ -26,9 +26,15 @@ export const VaultProvider = ({ children }: { children: ReactNode }) => {
         setPasswordState(null);
     };
 
-    const updateActivity = () => {
-        setLastActivity(Date.now());
-    };
+    const updateActivity = useCallback(() => {
+        setLastActivity(prevTime => {
+            const now = Date.now();
+            if (now - prevTime > 500) {
+                return now;
+            }
+            return prevTime;
+        });
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 
+import Settings from '@/features/manager/components/Settings';
 import Logo from '@Assets/logo.png';
 import AddCredential from '@Features/manager/components/AddCredential';
 
@@ -23,12 +24,13 @@ const Navbar: React.FC = () => {
                         </motion.div>
                     </div>
                     <motion.div
-                        className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0"
+                        className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0 gap-1"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.2 }}
                     >
                         <AddCredential />
+                        <Settings />
                     </motion.div>
                 </div>
             </div>

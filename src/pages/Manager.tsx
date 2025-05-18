@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Boxes } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useVault } from '@/context/VaultContext';
 import { Card, CardHeader } from '@Components/ui/card';
@@ -15,6 +16,14 @@ const Manager: React.FC = () => {
     const [search, setSearch] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
     const { password, updateActivity } = useVault();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!password) {
+            navigate('/');
+        }
+    }, []);
+
 
     const { data: credentials } = useQuery({
         queryKey: ['credentials'],
@@ -101,7 +110,6 @@ const Manager: React.FC = () => {
                                         className="col-span-full flex justify-center"
                                     >
                                         <Card className="p-8 w-full max-w-md flex flex-col items-center justify-center border-2 border-dashed shadow-2xl relative overflow-hidden">
-                                            {/* Existing animation code... */}
                                             <motion.div
                                                 className="absolute -top-10 -left-10 w-40 h-40 rounded-full opacity-30 blur-2xl"
                                                 animate={{ scale: [1, 1.2, 1], rotate: [0, 30, 0] }}

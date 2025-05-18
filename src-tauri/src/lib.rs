@@ -36,6 +36,18 @@ fn resolve_twofactor(password: &str, uid: &str) -> Value {
 }
 
 #[tauri::command]
+fn export_credentials(password: &str) -> Value {
+    let data = driver::read(password);
+    if data.is_null() {
+        return json!({ "success": false, "message": "Authentication failed. Invalid password." });
+    }
+
+    let response: Value = json!({ "success": true, "data": data });
+
+    response
+}
+
+#[tauri::command]
 fn remove_credentials(password: &str, uid: &str) -> Value {
     let mut container = driver::read(password);
     let credentials = container.as_array_mut().unwrap();
@@ -174,6 +186,7 @@ pub fn run() {
             add_credential,
             update_credential,
             remove_credentials,
+            export_credentials,
             resolve_twofactor
         ])
         .run(tauri::generate_context!())

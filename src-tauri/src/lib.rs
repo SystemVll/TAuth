@@ -36,6 +36,16 @@ fn resolve_twofactor(password: &str, uid: &str) -> Value {
 }
 
 #[tauri::command]
+fn change_password(old_password: &str, new_password: &str) -> bool {
+    let data = driver::read(old_password);
+    if data.is_null() {
+        return false;
+    }
+    driver::write(new_password, data);
+    true
+}
+
+#[tauri::command]
 fn export_credentials(password: &str) -> Value {
     let data = driver::read(password);
     if data.is_null() {
@@ -187,6 +197,7 @@ pub fn run() {
             update_credential,
             remove_credentials,
             export_credentials,
+            change_password,
             resolve_twofactor
         ])
         .run(tauri::generate_context!())

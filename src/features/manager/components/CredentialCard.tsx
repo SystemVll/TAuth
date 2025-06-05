@@ -80,7 +80,6 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 
         element!.innerText = '6';
         const interval = setInterval(() => {
-            console.log(element!.innerText);
             element!.innerText = (Number(element!.innerText) - 1).toString();
         }, 1000);
 

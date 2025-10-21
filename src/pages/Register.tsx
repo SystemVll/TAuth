@@ -32,7 +32,7 @@ const Register: React.FC = () => {
     const password = watch('password', '');
 
     async function createContainer(password: string) {
-        return await invoke('register', { password });
+        return (await invoke('register', { password })) as { success: boolean; message?: string };
     }
 
     const onSubmit = async (data: Inputs) => {
@@ -48,7 +48,11 @@ const Register: React.FC = () => {
 
         try {
             setIsLoading(true);
-            await createContainer(data.password);
+            const res = await createContainer(data.password);
+            if (!res.success) {
+                setError(res.message || 'Registration failed. Please try again.');
+                return;
+            }
 
             setPassword(data.password);
 
@@ -65,7 +69,7 @@ const Register: React.FC = () => {
         <div className="flex flex-col min-h-screen bg-background p-4">
             <div className="flex flex-col items-center mb-6 mt-8">
                 <Shield className="h-12 w-12 text-primary mb-4" />
-                <h1 className="text-2xl font-bold text-center">Secure Registration</h1>
+                <h1 className="text-2xl font-bold text-center">Secure Creation</h1>
                 <p className="text-muted-foreground text-center mt-2 px-4">
                     Create a strong password to protect your credentials.
                     It's not stored anywhere and never sent to any server.
@@ -168,10 +172,10 @@ const Register: React.FC = () => {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Registering...
+                                Creating ...
                             </span>
                         ) : (
-                            "Register"
+                            "Create Vault"
                         )}
                     </Button>
                 </form>

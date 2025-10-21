@@ -8,31 +8,50 @@ mod vault;
 #[tauri::command]
 fn resolve_twofactor(password: &str, uid: &str) -> Value {
     let mut container = driver::read(password);
+    if container.is_null() {
+        return json!({ "success": false, "message": "Authentication failed. Invalid password." });
+    }
 
-    let credentials = container.as_array_mut().unwrap();
+    let credentials = match container.as_array_mut() {
+        Some(arr) => arr,
+        None => return json!({ "success": false, "message": "Corrupted data: expected an array container." }),
+    };
 
-    let credential = credentials.iter_mut().find(|credential| {
-        let credential = credential.as_object().unwrap();
-        let id = credential.get("uid").unwrap().as_str().unwrap();
+    let credential = match credentials.iter_mut().find(|credential| {
+        credential
+            .as_object()
+            .and_then(|o| o.get("uid"))
+            .and_then(|v| v.as_str())
+            .map(|id| id == uid)
+            .unwrap_or(false)
+    }) {
+        Some(c) => c,
+        None => return json!({ "success": false, "message": "Credential not found." }),
+    };
 
-        id == uid
-    });
+    let credential_obj = match credential.as_object_mut() {
+        Some(obj) => obj,
+        None => return json!({ "success": false, "message": "Corrupted credential entry." }),
+    };
 
-    let credential_obj = credential.unwrap().as_object_mut().unwrap();
+    let creds = match credential_obj.get_mut("credential").and_then(|v| v.as_object_mut()) {
+        Some(obj) => obj,
+        None => return json!({ "success": false, "message": "Corrupted credential payload." }),
+    };
 
-    let credentials = credential_obj
-        .get_mut("credential")
-        .unwrap()
-        .as_object_mut()
-        .unwrap();
+    // twoFactor secret must be a base32 string
+    let secret = match creds.get("twoFactor").and_then(|v| v.as_str()) {
+        Some(s) if !s.is_empty() => s,
+        _ => return json!({ "success": false, "message": "Two-factor secret not set for this credential." }),
+    };
 
-    let secret = credentials.get("twoFactor").unwrap().as_str().unwrap();
-    let totp = TOTPBuilder::new().base32_key(secret).finalize().unwrap();
+    let totp = match TOTPBuilder::new().base32_key(secret).finalize() {
+        Ok(t) => t,
+        Err(_) => return json!({ "success": false, "message": "Invalid two-factor secret." }),
+    };
 
     let code = totp.generate();
-    let response: Value = json!({ "success": true, "code": code });
-
-    response
+    json!({ "success": true, "code": code })
 }
 
 #[tauri::command]
@@ -41,8 +60,8 @@ fn change_password(old_password: &str, new_password: &str) -> bool {
     if data.is_null() {
         return false;
     }
-    driver::write(new_password, data);
-    true
+    // Persist with new password
+    driver::write(new_password, data).is_ok()
 }
 
 #[tauri::command]
@@ -52,70 +71,101 @@ fn export_credentials(password: &str) -> Value {
         return json!({ "success": false, "message": "Authentication failed. Invalid password." });
     }
 
-    let response: Value = json!({ "success": true, "data": data });
-
-    response
+    json!({ "success": true, "data": data })
 }
 
 #[tauri::command]
 fn remove_credentials(password: &str, uid: &str) -> Value {
     let mut container = driver::read(password);
-    let credentials = container.as_array_mut().unwrap();
+    if container.is_null() {
+        return json!({ "success": false, "message": "Authentication failed. Invalid password." });
+    }
 
+    let credentials = match container.as_array_mut() {
+        Some(arr) => arr,
+        None => return json!({ "success": false, "message": "Corrupted data: expected an array container." }),
+    };
+
+    let original_len = credentials.len();
     credentials.retain(|credential| {
-        let credential = credential.as_object().unwrap();
-        let id = credential.get("uid").unwrap().as_str().unwrap();
-
-        id != uid
+        credential
+            .as_object()
+            .and_then(|o| o.get("uid"))
+            .and_then(|v| v.as_str())
+            .map(|id| id != uid)
+            .unwrap_or(true)
     });
 
-    driver::write(password, json!(credentials));
+    if credentials.len() == original_len {
+        return json!({ "success": false, "message": "Credential not found." });
+    }
 
-    let response: Value = json!({ "success": true });
-
-    response
+    match driver::write(password, json!(credentials)) {
+        Ok(_) => json!({ "success": true }),
+        Err(e) => json!({ "success": false, "message": e }),
+    }
 }
 
 #[tauri::command]
 fn update_credential(password: &str, uid: &str, credential_type: &str, credential: Value) -> Value {
     let mut container = driver::read(password);
-    let credentials = container.as_array_mut().unwrap();
+    if container.is_null() {
+        return json!({ "success": false, "message": "Authentication failed. Invalid password." });
+    }
 
+    let credentials = match container.as_array_mut() {
+        Some(arr) => arr,
+        None => return json!({ "success": false, "message": "Corrupted data: expected an array container." }),
+    };
+
+    let mut updated = false;
     for item in credentials.iter_mut() {
-        let credential_obj = item.as_object_mut().unwrap();
-        let id = credential_obj.get("uid").unwrap().as_str().unwrap();
-
-        if id == uid {
-            credential_obj.insert("type".to_string(), json!(credential_type));
-            credential_obj.insert("credential".to_string(), credential.clone());
-            break;
+        if let Some(credential_obj) = item.as_object_mut() {
+            if let Some(id) = credential_obj.get("uid").and_then(|v| v.as_str()) {
+                if id == uid {
+                    credential_obj.insert("type".to_string(), json!(credential_type));
+                    credential_obj.insert("credential".to_string(), credential.clone());
+                    updated = true;
+                    break;
+                }
+            }
         }
     }
 
-    driver::write(password, json!(credentials));
+    if !updated {
+        return json!({ "success": false, "message": "Credential not found." });
+    }
 
-    let response: Value = json!({ "success": true });
-    response
+    match driver::write(password, json!(credentials)) {
+        Ok(_) => json!({ "success": true }),
+        Err(e) => json!({ "success": false, "message": e }),
+    }
 }
 
 #[tauri::command]
 fn add_credential(password: &str, credential_type: &str, credential: Value) -> Value {
     let mut container = driver::read(password);
+    if container.is_null() {
+        return json!({ "success": false, "message": "Authentication failed. Invalid password." });
+    }
 
     let uid = Uuid::new_v4().to_string();
 
-    let credentials = container.as_array_mut().unwrap();
+    let credentials = match container.as_array_mut() {
+        Some(arr) => arr,
+        None => return json!({ "success": false, "message": "Corrupted data: expected an array container." }),
+    };
+
     credentials.push(json!({
         "uid": uid,
         "type": credential_type,
         "credential": credential
     }));
 
-    driver::write(password, json!(credentials));
-
-    let response: Value = json!({ "success": true });
-
-    response
+    match driver::write(password, json!(credentials)) {
+        Ok(_) => json!({ "success": true }),
+        Err(e) => json!({ "success": false, "message": e }),
+    }
 }
 
 #[tauri::command]
@@ -125,28 +175,19 @@ fn get_credentials(password: &str) -> Result<Vec<Value>, String> {
         return Err("Authentication failed. Invalid password.".to_string());
     }
 
-    let response: Vec<Value> = data
-        .as_array()
-        .unwrap()
+    let arr = data.as_array().ok_or_else(|| "Corrupted data: expected an array container.".to_string())?;
+
+    let response: Vec<Value> = arr
         .iter()
         .map(|credential| {
             let mut credential = credential.clone();
-            let credential_obj = credential.as_object_mut().unwrap();
 
-            let credentials = credential_obj
-                .get_mut("credential")
-                .unwrap()
-                .as_object_mut()
-                .unwrap();
-
-            let twofactor = credentials
-                .entry("twoFactor")
-                .or_insert(serde_json::Value::Bool(false));
-
-            if twofactor.is_boolean() {
-                *twofactor = serde_json::Value::Bool(false);
-            } else {
-                *twofactor = serde_json::Value::Bool(true);
+            if let Some(credential_obj) = credential.as_object_mut() {
+                if let Some(creds) = credential_obj.get_mut("credential").and_then(|v| v.as_object_mut()) {
+                    // If twoFactor is a string secret, expose as boolean true; otherwise false
+                    let expose_as_true = creds.get("twoFactor").and_then(|v| v.as_str()).map(|s| !s.is_empty()).unwrap_or(false);
+                    creds.insert("twoFactor".to_string(), Value::Bool(expose_as_true));
+                }
             }
 
             credential
@@ -158,24 +199,20 @@ fn get_credentials(password: &str) -> Result<Vec<Value>, String> {
 
 #[tauri::command]
 fn register(password: &str) -> Value {
-    vault::create();
+    if let Err(e) = vault::create() {
+        return json!({ "success": false, "message": format!("Failed to initialize vault: {}", e) });
+    }
 
-    driver::write(password, json!([]));
-
-    let response: Value = json!({ "success": true });
-
-    response
+    match driver::write(password, json!([])) {
+        Ok(_) => json!({ "success": true }),
+        Err(e) => json!({ "success": false, "message": e }),
+    }
 }
 
 #[tauri::command]
 fn login(password: &str) -> bool {
     let container = driver::read(password);
-
-    if container.is_array() {
-        return true;
-    }
-
-    false
+    container.is_array()
 }
 
 #[tauri::command]

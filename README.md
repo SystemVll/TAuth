@@ -6,7 +6,15 @@
   </a>
 </p>
 
-> **TAuth** is a modern, secure credential manager built with Tauri, React, and Rust. Keep your passwords, 2FA codes, and SSH keys safe in one elegant application! ✨
+<div align="center">
+  <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/31ca86d6-776c-4206-9c6d-cf6693cd3073" />
+</div>
+
+<div align="center">
+  <p>A modern, secure credential manager built with React & Rust. Keep all your credentials safe in an elegant application! ✨</p>
+</div>
+
+<hr/>
 
 ## ⚖️ Why TAuth?
 

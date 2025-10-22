@@ -1,5 +1,3 @@
-# 🔐 TAuth: Secure Credential Manager
-
 <p align="center">
   <a href="https://github.com/SystemVll/TAuth/releases/latest" target="_blank">
     <img src="https://img.shields.io/badge/⬇️%20Download%20Latest-TAuth-blueviolet?style=for-the-badge&logo=github" alt="Download TAuth" style="margin-bottom: 20px;"/>
@@ -11,7 +9,7 @@
 </div>
 
 <div align="center">
-  <p>A modern, secure credential manager built with React & Rust. Keep all your credentials safe in an elegant application! ✨</p>
+  <p><b>TAuth</b>, a modern, secure credential manager built with React & Rust. Keep all your credentials safe in an elegant application! ✨</p>
 </div>
 
 <hr/>

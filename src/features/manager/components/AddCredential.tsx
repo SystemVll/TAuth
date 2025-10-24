@@ -216,14 +216,16 @@ const AddCredential: React.FC = () => {
                                             )}
                                     </div>
                                     <div className="space-y-1">
-                                        <Label>2FA - Optional</Label>
+                                        <Label>2FA Secret (TOTP) - Optional</Label>
                                         <Input
                                             type="password"
+                                            placeholder="Enter TOTP secret if 2FA is enabled"
                                             {...registerAccount('twoFactor')}
                                         />
                                         <small className="text-gray-500">
-                                            Leave empty if you don't have 2FA
-                                            enabled. You can enable it later.
+                                            Leave empty if you don't have 2FA enabled.
+                                            <br />
+                                            Enter your TOTP secret (Base32 format) to enable time-based codes.
                                         </small>
                                     </div>
                                 </CardContent>

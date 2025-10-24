@@ -30,7 +30,7 @@ TAuth was created as a simple, open alternative to other authentication apps tha
 ## 📸 Screenshots
 <div align="center">
     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 10px;"> 
-      <img src="https://github.com/user-attachments/assets/10431ca1-f7fc-4daa-8093-40b153f0ead8" alt="Login Screen" width="24%" style="border-radius: 5px;"/> 
+      <img src="https://github.com/user-attachments/assets/c4822dd8-7bbc-481a-b8cd-a67a4533228d" alt="Login Screen" width="24%" style="border-radius: 5px;"/> 
       <img src="https://github.com/user-attachments/assets/32057b28-24de-45fa-8fd8-baa48c8f7439" alt="Dashboard" width="24%" style="border-radius: 5px;"/> 
       <img src="https://github.com/user-attachments/assets/d45b71d2-54ea-40e0-9e80-73896788afc2" alt="Credentials View" width="24%" style="border-radius: 5px;"/> 
       <img src="https://github.com/user-attachments/assets/2caf003b-89c5-44cd-880e-074e00639d4b" alt="Add Credentials" width="24%" style="border-radius: 5px;"/> 

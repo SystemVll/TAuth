@@ -66,38 +66,29 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
         updateActivity();
 
         const element = document.getElementById(`show-${uid}`);
-        if (!element || element.innerText !== 'Show') {
+
+        if (element!.innerText !== 'Show') {
             return;
         }
 
-        try {
-            const res = (await invoke('resolve_twofactor', {
-                password: vaultPassword,
-                uid: uid,
-            })) as { success?: boolean; code?: string; message?: string };
+        const { code } = (await invoke('resolve_twofactor', {
+            password: vaultPassword,
+            uid: uid,
+        })) as { code: string };
 
-            if (!res || !res.success || !res.code) {
-                alert(res?.message || 'Unable to resolve 2FA code');
-                return;
-            }
+        setTwoFactorCode(code);
 
-            setTwoFactorCode(res.code);
+        element!.innerText = '6';
+        const interval = setInterval(() => {
+            element!.innerText = (Number(element!.innerText) - 1).toString();
+        }, 1000);
 
-            element.innerText = '6';
-            const interval = setInterval(() => {
-                const n = Number(element.innerText);
-                element.innerText = isNaN(n) ? '6' : (n - 1).toString();
-            }, 1000);
+        setTimeout(() => {
+            clearInterval(interval);
+            document.getElementById(`show-${uid}`)!.innerText = 'Show';
 
-            setTimeout(() => {
-                clearInterval(interval);
-                const btn = document.getElementById(`show-${uid}`);
-                if (btn) btn.innerText = 'Show';
-                setTwoFactorCode(' - - - - - - ');
-            }, 6000);
-        } catch (e) {
-            alert('Unable to resolve 2FA code');
-        }
+            setTwoFactorCode(' - - - - - - ');
+        }, 6000);
     };
 
     const copyToClipboard = (text: string) => {

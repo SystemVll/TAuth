@@ -74,7 +74,7 @@ const EditCredential: React.FC<EditCredentialProps> = ({
                         website: credentials.website || '',
                         username: credentials.username || '',
                         password: credentials.password || '',
-                        twoFactor: ''
+                        twoFactor: credentials.twoFactor || ''
                     });
                 } else if (type === 'keypair') {
                     if (credentials.host) {
@@ -113,10 +113,8 @@ const EditCredential: React.FC<EditCredentialProps> = ({
             password: password,
         };
 
-        if (twoFactor && twoFactor.trim() !== '') {
+        if (twoFactor !== '') {
             credential.twoFactor = twoFactor.toUpperCase();
-        } else if (credentials.twoFactor) {
-            credential.twoFactor = credentials.twoFactor;
         }
 
         await invoke('update_credential', {
@@ -245,20 +243,14 @@ const EditCredential: React.FC<EditCredentialProps> = ({
                                         )}
                                 </div>
                                 <div className="space-y-1">
-                                    <Label>2FA Secret (TOTP) - Optional</Label>
+                                    <Label>2FA - Optional</Label>
                                     <Input
                                         type="password"
-                                        className="border-yellow-600"
                                         {...registerAccount('twoFactor')}
                                     />
-                                    <small className="text-yellow-600 dark:text-yellow-500 font-medium">
-                                        {credentials.twoFactor ? (
-                                            <>
-                                                ⚠️ 2FA is currently enabled. Leave empty to keep existing secret.
-                                            </>
-                                        ) : (
-                                            <>Leave empty if no 2FA is enabled. Enter new TOTP secret to enable.</>
-                                        )}
+                                    <small className="text-gray-500">
+                                        Leave empty if you don't have 2FA
+                                        enabled. You can enable it later.
                                     </small>
                                 </div>
                             </CardContent>

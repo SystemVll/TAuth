@@ -17,13 +17,23 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [shakeKey, setShakeKey] = useState(0);
     const { setPassword } = useVault();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        watch,
     } = useForm<Inputs>();
+
+    const passwordValue = watch('password');
+
+    useEffect(() => {
+        if (passwordValue) {
+            setShakeKey(prev => prev + 1);
+        }
+    }, [passwordValue]);
 
     useEffect(() => {
         (async () => {
@@ -58,21 +68,82 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-background to-background/80 px-6">
+        <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-background via-background to-background/80 px-6 overflow-hidden">
+            {/* Animated background elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 90, 0],
+                        opacity: [0.03, 0.05, 0.03],
+                    }}
+                    transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                    className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary rounded-full blur-3xl"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        rotate: [0, -90, 0],
+                        opacity: [0.03, 0.05, 0.03],
+                    }}
+                    transition={{
+                        duration: 25,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                    className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-primary rounded-full blur-3xl"
+                />
+            </div>
+
+            {/* Logo with enhanced size and animation */}
             <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex justify-center mb-10"
+                initial={{ opacity: 0, scale: 0.8, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="flex flex-col items-center mb-12 relative z-10"
             >
-                <img src={Logo} alt="Tauth" className="h-24 w-auto drop-shadow-md" />
+                <motion.div
+                    key={shakeKey}
+                    animate={{
+                        rotate: [0, 5, -5, 0],
+                        x: [0, -10, 10, -10, 10, 0],
+                    }}
+                    transition={{
+                        rotate: {
+                            duration: 6,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        },
+                        x: {
+                            duration: 0.4,
+                            ease: "easeInOut"
+                        }
+                    }}
+                >
+                    <img src={Logo} alt="Tauth" className="h-40 w-auto drop-shadow-2xl" />
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="mt-4 text-center"
+                >
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                        TAuth
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1">Secure Credential Manager</p>
+                </motion.div>
             </motion.div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="w-full max-w-md"
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-full max-w-md relative z-10"
             >
                 <div className="mb-6 text-center">
                     <h2 className="text-2xl font-bold mb-2">Welcome back</h2>

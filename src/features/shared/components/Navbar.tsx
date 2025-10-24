@@ -7,20 +7,23 @@ import AddCredential from '@Features/manager/components/AddCredential';
 const Navbar: React.FC = () => {
     return (
         <nav className="fixed w-full top-0 border-b border-[#383838] bg-background z-50">
-            <div className="mx-auto max-w-7xl px-2 px-6">
+            <div className="mx-auto max-w-7xl px-6">
                 <div className="relative flex h-16 items-center justify-between">
                     <div className="flex justify-start">
                         <motion.div
-                            className="flex shrink-0 items-center"
+                            className="flex shrink-0 items-center gap-3"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             transition={{ duration: 0.2 }}
                         >
                             <img
-                                className="h-8 w-auto"
+                                className="h-12 w-auto"
                                 src={Logo}
                                 alt="Tauth"
                             />
+                            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                                TAuth
+                            </span>
                         </motion.div>
                     </div>
                     <motion.div

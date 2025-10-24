@@ -51,17 +51,19 @@ impl Drop for SensitiveData {
     }
 }
 
-pub fn write(password: &str, credentials: Value) -> Result<(), String> {
+pub fn write(password: &str, credentials: Value) {
     let container_path = vault::get_container_path();
     let sensitive_password = SensitiveData::new(password.to_string());
 
+    // Convert credentials to string in a memory-safe way
     let credentials_str = credentials.to_string();
-    let encrypted_data = vault::encrypt(sensitive_password.expose().to_string(), credentials_str)
-        .map_err(|_| "Encryption failed".to_string())?;
+    let encrypted_data: Vec<u8> =
+        vault::encrypt(sensitive_password.expose().to_string(), credentials_str);
 
-    let mut descriptor = File::create(container_path).map_err(|e| e.to_string())?;
-    descriptor.write_all(&encrypted_data).map_err(|e| e.to_string())?;
-    Ok(())
+    let mut descriptor = File::create(container_path).expect("failed to create file");
+    let _ = descriptor
+        .write_all(&encrypted_data)
+        .map_err(|e| e.to_string());
 }
 
 pub fn read(password: &str) -> Value {

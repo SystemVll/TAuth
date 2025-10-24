@@ -9,7 +9,7 @@
 </div>
 
 <div align="center">
-  <p><b>TAuth</b>, a modern, secure credential manager built with React & Rust. Keep all your credentials safe in an elegant application! ✨</p>
+  <p><b>TAuth</b>: Keep all your credentials safe in an elegant application! ✨</p>
 </div>
 
 <hr/>

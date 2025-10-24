@@ -1,5 +1,3 @@
-# 🔐 TAuth: Secure Credential Manager
-
 <p align="center">
   <a href="https://github.com/SystemVll/TAuth/releases/latest" target="_blank">
     <img src="https://img.shields.io/badge/⬇️%20Download%20Latest-TAuth-blueviolet?style=for-the-badge&logo=github" alt="Download TAuth" style="margin-bottom: 20px;"/>
@@ -18,16 +16,16 @@
 
 ## ⚖️ Why TAuth?
 
-TAuth was created as a simple, open alternative to other authentication apps that may be closed source or store your data in the cloud <span style="background-color: red;">without transparency</span> (Google). With TAuth, your credentials are always encrypted and stored locally—giving you full control and peace of mind. Make your big brother smaller day after day.
+TAuth was created as a simple, open alternative to other authentication apps that may be closed source or store your data in the cloud <span style="background-color: red;">without transparency</span> (Google). With TAuth, your credentials are always encrypted and stored locally giving you full control and peace of mind. Make your big brother smaller day after day.
 
 ## ✨ Features
 
--   🔑 **Password Management** — Securely store and organize all your passwords
--   🔢 **Two-Factor Authentication (2FA)** — Generate TOTP codes instantly without needing your phone
--   🔐 **Key Pair Management** — Organize and access your SSH key pairs effortlessly
--   🛡️ **End-to-End Encryption** — All your data is encrypted locally; nothing is stored in the cloud
--   🖥️ **Cross-Platform** — Works on Windows, macOS, and Linux
--   💾 **Memory Attack Resistant** — Sensitive data is securely handled in memory to prevent extraction through memory dumps or cold boot attacks
+-   🔑 **Password Management** Securely store and organize all your passwords
+-   🔢 **Two-Factor Authentication (2FA)** Generate TOTP codes instantly without needing your phone
+-   🔐 **Key Pair Management** Organize and access your SSH key pairs effortlessly
+-   🛡️ **End-to-End Encryption** All your data is encrypted locally; nothing is stored in the cloud
+-   🖥️ **Cross-Platform** Works on Windows, macOS, and Linux
+-   💾 **Memory Attack Resistant** Sensitive data is securely handled in memory to prevent extraction through memory dumps or cold boot attacks
 
 ## 📸 Screenshots
 <div align="center">
@@ -75,10 +73,10 @@ TAuth was created as a simple, open alternative to other authentication apps tha
 
 ### Usage Guide
 
-1. **Register** 📝 — Create a secure master password (this will encrypt all your credentials)
-2. **Login** 🔓 — Unlock your vault using your master password
-3. **Add Credentials** ➕ — Store your passwords, 2FA tokens, or SSH keys
-4. **Manage Everything** 🗂️ — View, search, edit, and delete your stored credentials
+1. **Register** 📝 Create a secure master password (this will encrypt all your credentials)
+2. **Login** 🔓 Unlock your vault using your master password
+3. **Add Credentials** ➕ Store your passwords, 2FA tokens, or SSH keys
+4. **Manage Everything** 🗂️ View, search, edit, and delete your stored credentials
 
 ## 🔒 Security
 

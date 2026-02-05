@@ -1,4 +1,4 @@
-import { Box, Check, ChevronsUpDown } from 'lucide-react';
+import { Box, Check, ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
@@ -29,6 +29,9 @@ const AddCredential: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [schemeValue, setSchemeValue] = useState('ssh://');
 
+    const [showAccountPassword, setShowAccountPassword] = useState(false);
+    const [showAccount2fa, setShowAccount2fa] = useState(false);
+
     const {
         register: registerAccount,
         handleSubmit: handleSubmitAccount,
@@ -57,8 +60,13 @@ const AddCredential: React.FC = () => {
             password: accountPassword,
         };
 
-        if (twoFactor != '') {
-            credential['twoFactor'] = twoFactor.toUpperCase();
+        const normalizedTwoFactor =
+            typeof twoFactor === 'string'
+                ? twoFactor.replace(/\s+/g, '').toUpperCase()
+                : '';
+
+        if (normalizedTwoFactor !== '') {
+            credential['twoFactor'] = normalizedTwoFactor;
         }
 
         await invoke('add_credential', {
@@ -202,12 +210,39 @@ const AddCredential: React.FC = () => {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>Password</Label>
-                                        <Input
-                                            type="password"
-                                            {...registerAccount('password', {
-                                                required: true,
-                                            })}
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={
+                                                    showAccountPassword
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                className="pr-10"
+                                                {...registerAccount('password', {
+                                                    required: true,
+                                                })}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowAccountPassword(
+                                                        !showAccountPassword,
+                                                    )
+                                                }
+                                                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                                                aria-label={
+                                                    showAccountPassword
+                                                        ? 'Hide password'
+                                                        : 'Show password'
+                                                }
+                                            >
+                                                {showAccountPassword ? (
+                                                    <EyeOff size={16} />
+                                                ) : (
+                                                    <Eye size={16} />
+                                                )}
+                                            </button>
+                                        </div>
                                         {errorsAccount.password?.type ===
                                             'required' && (
                                                 <small className="text-gray-500">
@@ -217,10 +252,45 @@ const AddCredential: React.FC = () => {
                                     </div>
                                     <div className="space-y-1">
                                         <Label>2FA - Optional</Label>
-                                        <Input
-                                            type="password"
-                                            {...registerAccount('twoFactor')}
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={
+                                                    showAccount2fa
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                className="pr-10"
+                                                {...registerAccount('twoFactor', {
+                                                    onChange: (event) => {
+                                                        event.current.value =
+                                                            event.current.value.replace(
+                                                                /\s+/g,
+                                                                '',
+                                                            );
+                                                    },
+                                                })}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowAccount2fa(
+                                                        !showAccount2fa,
+                                                    )
+                                                }
+                                                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                                                aria-label={
+                                                    showAccount2fa
+                                                        ? 'Hide 2FA'
+                                                        : 'Show 2FA'
+                                                }
+                                            >
+                                                {showAccount2fa ? (
+                                                    <EyeOff size={16} />
+                                                ) : (
+                                                    <Eye size={16} />
+                                                )}
+                                            </button>
+                                        </div>
                                         <small className="text-gray-500">
                                             Leave empty if you don't have 2FA
                                             enabled. You can enable it later.

@@ -13,7 +13,7 @@ import EditCredential from '@Features/manager/components/EditCredential';
 import { useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 
-import DeleteConfirmDialog from './DeleteConfirmDialog';
+import DeleteConfirmDialog from './DeleteConfirmDialog.tsx';
 
 type CredentialCardProps = {
     uid: string;

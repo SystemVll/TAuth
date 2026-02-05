@@ -6,9 +6,17 @@ use std::{fs::File, io::Write, path::PathBuf};
 use zeroize::Zeroize;
 
 pub fn get_data_dir() -> PathBuf {
-    let data_dir = std::env::var("APPDATA").unwrap();
-    let app_dir = data_dir + "\\com.tauth.app";
-    PathBuf::from(app_dir)
+    if (std::env::consts::OS == "linux") || (std::env::consts::OS == "macos") {
+        let home_dir = std::env::var("HOME").unwrap();
+        let app_dir = home_dir + "/.local/share/com.tauth.app";
+        return PathBuf::from(app_dir);
+    } else if std::env::consts::OS == "windows" {
+        let data_dir = std::env::var("APPDATA").unwrap();
+        let app_dir = data_dir + "\\com.tauth.app";
+        return PathBuf::from(app_dir);
+    } else {
+        panic!("Unsupported operating system");
+    }
 }
 
 pub fn get_container_path() -> PathBuf {

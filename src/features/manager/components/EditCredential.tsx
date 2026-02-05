@@ -113,8 +113,13 @@ const EditCredential: React.FC<EditCredentialProps> = ({
             password: password,
         };
 
-        if (twoFactor && twoFactor.trim() !== '') {
-            credential.twoFactor = twoFactor.toUpperCase();
+        const normalizedTwoFactor =
+            typeof twoFactor === 'string'
+                ? twoFactor.replace(/\s+/g, '').toUpperCase()
+                : '';
+
+        if (normalizedTwoFactor !== '') {
+            credential.twoFactor = normalizedTwoFactor;
         } else if (credentials.twoFactor) {
             credential.twoFactor = credentials.twoFactor;
         }
@@ -249,7 +254,15 @@ const EditCredential: React.FC<EditCredentialProps> = ({
                                     <Input
                                         type="password"
                                         className="border-yellow-600"
-                                        {...registerAccount('twoFactor')}
+                                        {...registerAccount('twoFactor', {
+                                            onChange: (event) => {
+                                                event.current.value =
+                                                    event.current.value.replace(
+                                                        /\s+/g,
+                                                        '',
+                                                    );
+                                            },
+                                        })}
                                     />
                                     <small className="text-yellow-600 dark:text-yellow-500 font-medium">
                                         {credentials.twoFactor ? (

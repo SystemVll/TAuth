@@ -1,0 +1,124 @@
+name: 📦 Publish Tauri App (with Bun)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build & Release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+          - platform: windows-latest
+          - platform: macos-latest
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      # 1) Checkout
+      - name: 🚀 Checkout repo
+        uses: actions/checkout@v4
+
+      # 2) Install Bun
+      - name: 🍪 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "latest"
+
+      # 3) Install JS deps with Bun
+      - name: 📦 Install frontend deps
+        run: bun install
+
+      # 4) Install Rustup
+      - name: 🦀 Install Rustup
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            curl -sSf https://win.rustup.rs/x86_64 -o rustup-init.exe
+            ./rustup-init.exe -y --default-toolchain stable
+            echo "$USERPROFILE/.cargo/bin" >> $GITHUB_PATH
+          else
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+            echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          fi
+
+      # 5) Cache Rust dependencies
+      - name: 📦 Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # 6) Linux-specific deps for webview bundling
+      - name: 📥 Install Linux deps
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      # 7) Build frontend
+      - name: 🛠 Build frontend
+        run: bun run build
+
+      # 8) Build Tauri app
+      - name: 📦 Build Tauri
+        run: |
+          cd src-tauri
+          cargo build --release
+
+      # 9) Package artifacts
+      - name: 📦 Package artifacts
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cp src-tauri/target/release/tauth.exe artifacts/TAuth-${{ github.ref_name }}-windows.exe
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            cp src-tauri/target/release/tauth artifacts/TAuth-${{ github.ref_name }}-macos
+          else
+            cp src-tauri/target/release/tauth artifacts/TAuth-${{ github.ref_name }}-linux
+          fi
+
+      # 10) Upload artifacts
+      - name: 📤 Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TAuth-${{ matrix.platform }}
+          path: artifacts/*
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # 1) Download all artifacts
+      - name: 📥 Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      # 2) Flatten artifacts into single directory
+      - name: 📦 Flatten artifacts
+        shell: bash
+        run: |
+          mkdir -p release-files
+          find artifacts -type f -exec cp {} release-files/ \;
+
+      # 3) Create GitHub Release
+      - name: 🚀 Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: 📦 TAuth ${{ github.ref_name }}
+          body: Tauri build via Bun
+          draft: false
+          prerelease: false
+          files: release-files/*
+
